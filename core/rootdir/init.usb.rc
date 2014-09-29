@@ -1,7 +1,4 @@
 # Copyright (C) 2012 The Android Open Source Project
-#
-# USB configuration common for all android devices
-#
 
 on post-fs-data
     chown system system /sys/class/android_usb/android0/f_mass_storage/lun/file
@@ -17,8 +14,6 @@ on property:sys.usb.config=none
     setprop sys.usb.state ${sys.usb.config}
 
 # adb only USB configuration
-# This should only be used during device bringup
-# and as a fallback if the USB manager fails to set a standard configuration
 on property:sys.usb.config=adb
     write /sys/class/android_usb/android0/enable 0
     write /sys/class/android_usb/android0/idVendor 18d1
@@ -47,7 +42,7 @@ on property:sys.usb.config=accessory,adb
     start adbd
     setprop sys.usb.state ${sys.usb.config}
 
-# audio accessory configuration
+# Audio accessory configuration
 on property:sys.usb.config=audio_source
     write /sys/class/android_usb/android0/enable 0
     write /sys/class/android_usb/android0/idVendor 18d1
@@ -56,7 +51,7 @@ on property:sys.usb.config=audio_source
     write /sys/class/android_usb/android0/enable 1
     setprop sys.usb.state ${sys.usb.config}
 
-# audio accessory configuration, with adb
+# Audio accessory configuration, with adb
 on property:sys.usb.config=audio_source,adb
     write /sys/class/android_usb/android0/enable 0
     write /sys/class/android_usb/android0/idVendor 18d1
@@ -86,6 +81,5 @@ on property:sys.usb.config=accessory,audio_source,adb
     setprop sys.usb.state ${sys.usb.config}
 
 # Used to set USB configuration at boot and to switch the configuration
-# when changing the default configuration
 on property:persist.sys.usb.config=*
     setprop sys.usb.config ${persist.sys.usb.config}
