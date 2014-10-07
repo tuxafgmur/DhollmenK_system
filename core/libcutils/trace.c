@@ -43,7 +43,7 @@ static pthread_mutex_t  atrace_tags_mutex    = PTHREAD_MUTEX_INITIALIZER;
 // is not set to '1'.
 void atrace_set_debuggable(bool debuggable)
 {
-    atrace_is_debuggable = debuggable;
+    atrace_is_debuggable = false;  /*debuggable; */
     atrace_update_tags();
 }
 
@@ -90,6 +90,7 @@ static bool atrace_is_app_tracing_enabled()
     char value[PROPERTY_VALUE_MAX];
     bool result = false;
 
+#if 0
     // Check whether the system is debuggable.
     property_get("ro.debuggable", value, "0");
     if (value[0] == '1') {
@@ -112,6 +113,11 @@ static bool atrace_is_app_tracing_enabled()
                     errno);
         }
     }
+
+#else
+	sys_debuggable = false;
+        atrace_is_debuggable = false;
+#endif
 
     return result;
 }
@@ -169,7 +175,6 @@ static void atrace_init_once()
 {
     atrace_marker_fd = open("/sys/kernel/debug/tracing/trace_marker", O_WRONLY);
     if (atrace_marker_fd == -1) {
-        ALOGE("Error opening trace file: %s (%d)", strerror(errno), errno);
         atrace_enabled_tags = 0;
         goto done;
     }
