@@ -28,6 +28,7 @@ class Volume {
 private:
     int mState;
     int mFlags;
+    char* mOpts;
 
 public:
 #endif
@@ -73,14 +74,14 @@ public:
 
     int mountVol();
     int unmountVol(bool force, bool revert);
-    int formatVol(bool wipe);
+    int formatVol(bool wipe, const char *fstype = NULL);
 
     const char* getLabel() { return mLabel; }
     const char* getUuid() { return mUuid; }
     const char* getUserLabel() { return mUserLabel; }
-    bool isExternalAppsEnabled();
     int getState() { return mState; }
     int getFlags() { return mFlags; };
+    bool isExternalAppsEnabled();
 
     int getLunNumber() { return mLunNumber; }
     void setLunNumber(int lunNumber) { mLunNumber = lunNumber; }

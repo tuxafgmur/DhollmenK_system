@@ -44,12 +44,17 @@
 
 static char E2FSCK_PATH[] = HELPER_PATH "e2fsck";
 static char MKEXT4FS_PATH[] = HELPER_PATH "make_ext4fs";
+static char MKE2FS_PATH[] = HELPER_PATH "mke2fs";
 
 int Ext4::doMount(const char *fsPath, const char *mountPoint, bool ro, bool remount,
-        bool executable, bool sdcard) {
+        bool executable, bool sdcard, const char *mountOpts) {
     int rc;
     unsigned long flags;
-    const char *data = NULL;
+    char data[1024];
+
+    data[0] = '\0';
+    if (mountOpts)
+        strlcat(data, mountOpts, sizeof(data));
 
     flags = MS_NOATIME | MS_NODEV | MS_NOSUID | MS_DIRSYNC;
 
@@ -59,7 +64,9 @@ int Ext4::doMount(const char *fsPath, const char *mountPoint, bool ro, bool remo
 
     if (sdcard) {
         // Mount external volumes with forced context
-        data = "context=u:object_r:sdcard_external:s0";
+        if (data[0])
+            strlcat(data, ",", sizeof(data));
+        strlcat(data, "context=u:object_r:sdcard_external:s0", sizeof(data));
     }
 
     rc = mount(fsPath, mountPoint, "ext4", flags, data);
@@ -74,7 +81,6 @@ int Ext4::doMount(const char *fsPath, const char *mountPoint, bool ro, bool remo
 }
 
 int Ext4::check(const char *fsPath) {
-    bool rw = true;
     if (access(E2FSCK_PATH, X_OK)) {
         SLOGW("Skipping fs checks.\n");
         return 0;
@@ -121,15 +127,21 @@ int Ext4::check(const char *fsPath) {
 }
 
 int Ext4::format(const char *fsPath, const char *mountpoint) {
-    int fd;
     const char *args[5];
     int rc;
     int status;
 
-    args[0] = MKEXT4FS_PATH;
-    args[1] = "-J";
-    args[2] = "-a";
-    args[3] = mountpoint;
+    if (mountpoint == NULL) {
+        args[0] = MKE2FS_PATH;
+        args[1] = "-j";
+        args[2] = "-T";
+        args[3] = "ext4";
+    } else {
+        args[0] = MKEXT4FS_PATH;
+        args[1] = "-J";
+        args[2] = "-a";
+        args[3] = mountpoint;
+    }
     args[4] = fsPath;
     rc = android_fork_execvp(ARRAY_SIZE(args), (char **)args, &status, false,
             true);
