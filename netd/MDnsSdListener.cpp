@@ -28,8 +28,8 @@
 #include <string.h>
 
 #define LOG_TAG "MDnsDS"
-#define DBG 1
-#define VDBG 1
+#define DBG 0
+#define VDBG 0
 
 #include <cutils/log.h>
 #include <cutils/properties.h>

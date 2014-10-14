@@ -259,10 +259,6 @@ bool BatteryMonitor::update(void) {
             strlcat(dmesgline, b, sizeof(dmesgline));
         }
 
-        ALOGI("%s chg=%s%s%s", dmesgline,
-                  props.chargerAcOnline ? "a" : "",
-                  props.chargerUsbOnline ? "u" : "",
-                  props.chargerWirelessOnline ? "w" : "");
     }
 
     if (mBatteryPropertiesRegistrar != NULL)

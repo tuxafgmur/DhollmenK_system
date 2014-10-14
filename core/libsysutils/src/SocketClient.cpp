@@ -183,8 +183,6 @@ int SocketClient::sendDataLocked(const void *data, int len) {
         if (rc == 0) {
             SLOGW("0 length write :(");
             errno = EIO;
-        } else {
-            SLOGW("write error (%s)", strerror(errno));
         }
         return -1;
     }
